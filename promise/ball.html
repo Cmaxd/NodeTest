@@ -1,0 +1,114 @@
+<!doctype>
+<html>
+<head>
+	<title>Promise Animation</title>
+	<style type="text/css">
+		.ball{
+			width: 40px;
+			height: 40px;
+			border-radius: 20px;
+		}
+		.ball1{
+			background-color: red;
+		}
+		.ball2{
+			background-color: yellow;
+		}
+		.ball3{
+			background-color: green;
+		}
+	</style>
+	<script type="text/javascript" src="../node_modules/bluebird/js/browser/bluebird.js"></script>
+</head>
+<body>
+	<div class="ball ball1" style="margin-left: 0"></div>
+	<div class="ball ball2" style="margin-left: 0"></div>
+	<div class="ball ball3" style="margin-left: 0"></div>
+	<script>
+		var ball1 = document.querySelector(".ball1");
+		var ball2 = document.querySelector(".ball2");
+		var ball3 = document.querySelector(".ball3");
+		// function animate(ball, distance, cb){
+		// 	setTimeout(function(){
+		// 		var marginLeft = parseInt(ball.style.marginLeft, 10);
+		// 		if(marginLeft === distance){
+		// 			cb && cb();
+		// 		}else{
+		// 			if(marginLeft < distance){
+		// 				marginLeft ++;
+		// 			}
+		// 			else{
+		// 				marginLeft --;
+		// 			}
+		// 			ball.style.marginLeft = marginLeft;
+		// 			animate(ball, distance, cb);
+		// 		}
+		// 	},13)
+		// }
+
+		// animate(ball1, 100, function(){
+		// 	animate(ball2, 200, function(){
+		// 		animate(ball3, 300, function(){
+		// 			animate(ball3, 150, function(){
+		// 				animate(ball2, 150, function(){
+		// 					animate(ball1, 150, function(){
+		// 						alert('结束！')
+		// 					})
+		// 				})
+		// 			})
+		// 		})
+		// 	})
+		// })
+		
+		// Promise以同步的方式来写代码，执行的操作是异步的，又保证程序的执行顺序是同步的
+		var Promise = window.Promise;
+
+		function promiseAnimate(ball,distance){
+			return new Promise(function(resolve, reject){
+				function _animate(){
+					setTimeout(function(){
+						var marginLeft = parseInt(ball.style.marginLeft, 10);
+						if(marginLeft === distance){
+							resolve()
+						}else{
+							if(marginLeft < distance){
+								marginLeft ++;
+							}
+							else{
+								marginLeft --;
+							}
+							ball.style.marginLeft = marginLeft + 'px';
+							_animate();
+						}
+					},13)
+				}
+				_animate();
+			})
+		}
+
+		// .then 里面是一个回调函数，必须返回Promise对象
+		promiseAnimate(ball1,100)
+			.then(function(){
+				console.log('ball2: 200')
+				return promiseAnimate(ball2, 200)
+			})
+			.then(function(){
+				console.log('ball3: 300')
+				return promiseAnimate(ball3,300)
+			})
+			.then(function(){
+				console.log('ball3: 150')
+				return promiseAnimate(ball3,150)
+			})
+			.then(function(){
+				console.log('ball2: 150')
+				return promiseAnimate(ball2,150)
+			})
+			.then(function(){
+				console.log('ball1: 150')
+				return promiseAnimate(ball1,150)
+			})
+
+	</script>
+</body>
+</html>
